@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory - Frontend</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">Inventory Frontend</a>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1>Products (Frontend API)</h1>
+        
+        <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name or SKU...">
+        </div>
+
+        <table class="table table-hover" id="productTable">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>SKU</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr><td colspan="5" class="text-center">Loading...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api/products/';
+
+        // Fetch and display products
+        async function fetchProducts() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                displayProducts(data.results || data);
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                document.getElementById('tableBody').innerHTML = 
+                    '<tr><td colspan="5">Error loading products</td></tr>';
+            }
+        }
+
+        // Display products in table
+        function displayProducts(products) {
+            const tbody = document.getElementById('tableBody');
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center">No products found</td></tr>';
+                return;
+            }
+            tbody.innerHTML = products.map(p => `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.sku}</td>
+                    <td>${p.quantity}</td>
+                    <td>$${p.price}</td>
+                    <td>${p.location}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', async (e) => {
+            const query = e.target.value;
+            if (!query) {
+                fetchProducts();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}search/?q=${query}`);
+                const data = await response.json();
+                displayProducts(data);
+            } catch (error) {
+                console.error('Error searching:', error);
+            }
+        });
+
+        // Load products on page load
+        fetchProducts();
+    </script>
+</body>
+</html>
