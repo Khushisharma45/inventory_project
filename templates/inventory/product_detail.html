@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="card">
+    <div class="card-header">
+      <h1 class="card-title mb-0">{{ product.name }}</h1>
+    </div>
+    <div class="card-body">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><strong>SKU:</strong> {{ product.sku }}</li>
+        <li class="list-group-item"><strong>Quantity:</strong> {{ product.quantity }}</li>
+        <li class="list-group-item"><strong>Price:</strong> ${{ product.price }}</li>
+        <li class="list-group-item"><strong>Location:</strong> {{ product.location }}</li>
+        <li class="list-group-item"><strong>Created:</strong> {{ product.created_at|date:'SHORT_DATETIME_FORMAT' }}</li>
+      </ul>
+    </div>
+    <div class="card-footer">
+      <a class="btn btn-primary" href="{% url 'inventory:product_edit' product.pk %}">Edit</a>
+      <a class="btn btn-danger" href="{% url 'inventory:product_delete' product.pk %}">Delete</a>
+      <a class="btn btn-secondary" href="{% url 'inventory:product_list' %}">Back</a>
+    </div>
+  </div>
+{% endblock %}
